@@ -24,47 +24,45 @@ mongoose.connect(uristring, function (err, res) {
 
 // This is the schema.  Note the types, validation and trim
 // statements.  They enforce useful constraints on the data.
-var userSchema = new mongoose.Schema({
-  name: {
-    first: String,
-    last: { type: String, trim: true }
-  },
-  age: { type: Number, min: 0}
+var accessorySchema = new mongoose.Schema(
+  aid: { type: String},
+  img: { type: String},
+  des: { type: String}
+  );
+
+var mschema = new mongoose.Schema({
+  pid: { type: String},
+  acs: [accessorySchema]
 });
 
 // Compiles the schema into a model, opening (or creating, if
 // nonexistent) the 'PowerUsers' collection in the MongoDB database
-var PUser = mongoose.model('PowerUsers', userSchema);
+var pm = mongoose.model('ProductMapping', mschema);
 
 // Clear out old data
-PUser.remove({}, function(err) {
-  if (err) {
-    console.log ('error deleting old data.');
-  }
-});
+// PUser.remove({}, function(err) {
+//   if (err) {
+//     console.log ('error deleting old data.');
+//   }
+// });
 
 // Creating one user.
-var johndoe = new PUser ({
-  name: { first: 'John', last: '  Doe   ' },
-  age: 25
+var p1 = new pm ({
+  pid: '000000',
+  acs: [{aid: '111111', img: 'http://cheaperthanashrink.net/wp-content/uploads/2013/05/cowboy-stachifier.jpg', des: 'Really cool kid, free!'},{aid:'222222', img: 'http://www.toxel.com/wp-content/uploads/2010/01/tea11.jpg', des: 'Great tea cup 55Kr!'}]
 });
 
 // Saving it to the database.  
-johndoe.save(function (err) {if (err) console.log ('Error on save!')});
+p1.save(function (err) {if (err) console.log ('Error on save!')});
 
 // Creating more users manually
-var janedoe = new PUser ({
-  name: { first: 'Jane', last: 'Doe' },
-  age: 65
+var p2 = new pm ({
+  pid: '000001',
+  acs: [{aid: '111111', img: 'http://cheaperthanashrink.net/wp-content/uploads/2013/05/cowboy-stachifier.jpg', des: 'Really cool kid, free!'},{aid:'222222', img: 'http://www.toxel.com/wp-content/uploads/2010/01/tea11.jpg', des: 'Great tea cup 55Kr!'}]
 });
-janedoe.save(function (err) {if (err) console.log ('Error on save!')});
 
-// Creating more users manually
-var alicesmith = new PUser ({
-  name: { first: 'Alice', last: 'Smith' },
-  age: 45
-});
-alicesmith.save(function (err) {if (err) console.log ('Error on save!')});
+p2.save(function (err) {if (err) console.log ('Error on save!')});
+
 
 
 // In case the browser connects before the database is connected, the
@@ -82,12 +80,11 @@ http.createServer(function (req, res) {
 
 function createWebpage (req, res) {
   // Let's find all the documents
-  PUser.find({}).exec(function(err, result) { 
+  pm.find({}).exec(function(err, result) { 
     if (!err) { 
       res.write(html1 + JSON.stringify(result, undefined, 2) +  html2 + result.length + html3);
       // Let's see if there are any senior citizens (older than 64) with the last name Doe using the query constructor
-      var query = PUser.find({'name.last': 'Doe'}); // (ok in this example, it's all entries)
-      query.where('age').gt(64);
+      var query = pm.find({'pid': '000000'}); // (ok in this example, it's all entries)
       query.exec(function(err, result) {
 	if (!err) {
 	  res.end(html4 + JSON.stringify(result, undefined, 2) + html5 + result.length + html6);
