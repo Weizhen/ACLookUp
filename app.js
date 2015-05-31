@@ -24,11 +24,11 @@ mongoose.connect(uristring, function (err, res) {
 
 // This is the schema.  Note the types, validation and trim
 // statements.  They enforce useful constraints on the data.
-var accessorySchema = new mongoose.Schema(
+var accessorySchema = new mongoose.Schema({
   aid: { type: String},
   img: { type: String},
   des: { type: String}
-  );
+});
 
 var mschema = new mongoose.Schema({
   pid: { type: String},
