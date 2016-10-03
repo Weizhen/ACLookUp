@@ -41,11 +41,11 @@ var mschema = new mongoose.Schema({
 var pm = mongoose.model('ProductMapping', mschema);
 
 // Clear out old data
-// PUser.remove({}, function(err) {
-//   if (err) {
-//     console.log ('error deleting old data.');
-//   }
-// });
+pm.remove({}, function(err) {
+  if (err) {
+    console.log ('error deleting old data.');
+  }
+});
 
 // Creating one user.
 // var p1 = new pm ({
